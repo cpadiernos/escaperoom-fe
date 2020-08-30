@@ -26,9 +26,6 @@
       <p v-if="error && submitting" class="error-message">
         Please fill out all the required fields.
       </p>
-      <p v-if="success" class="success-message">
-        Game was successfully added.
-      </p>
       <button>Add Game</button>
     </form>
   </div>
@@ -49,6 +46,17 @@
         },
       }
     },
+    computed: {
+      invalidName() {
+        return this.game.name === ''
+      },
+      invalidDescription() {
+        return this.game.description === ''
+      },
+      invalidNumOfPlayers() {
+        return this.game.numOfPlayers <= 0
+      }
+    },
     methods: {
       handleSubmit() {
         this.submitting = true
@@ -61,6 +69,7 @@
         ) { this.error = true; return}
           
         this.$emit('add:game', this.game)
+        this.$emit('close')
         this.$refs.first.focus()
         this.game = {
           name: '',
@@ -74,17 +83,6 @@
       clearStatus() {
         this.error = false
         this.success = false
-      }
-    },
-    computed: {
-      invalidName() {
-        return this.game.name === ''
-      },
-      invalidDescription() {
-        return this.game.description === ''
-      },
-      invalidNumOfPlayers() {
-        return this.game.numOfPlayers <= 0
       }
     },
   }
