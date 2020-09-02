@@ -3,36 +3,47 @@
     <h1>{{ game.name }}</h1>
     <!--<input type="text" />-->
     <!--<button>Send Hint</button>-->
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Code</th>
-          <th>Hints</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="puzzle in puzzles" :key="puzzle.id">
-          <td>{{ puzzle.name }}</td>
-          <td>{{ puzzle.code }}</td>
-          <td>
-              <span v-for="hint in puzzle.hints" :key="hint.id">{{ hint.text }}<br/></span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-if="puzzles.length"  class="puzzle-nav" >
+      <div v-for="puzzle in puzzles" :key="puzzle.id" >
+        <puzzle-box @select:puzzle="selectPuzzle" :puzzle="puzzle"/>
+      </div>
+    </div>
+    <div v-else>
+      <p>Please add puzzles.</p>
+    </div>
+    <div class="puzzle-grid">
+      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="beforePuzzles">
+        <h4 slot="header">Before Puzzles</h4>
+      </puzzle-grid>
+      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="selectedPuzzle">
+        <h4 slot="header">Selected Puzzle</h4>
+      </puzzle-grid>
+      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="afterPuzzles">
+        <h4 slot="header">After Puzzles</h4>
+      </puzzle-grid>
+    </div>
   </div>
 </template>
 
 <script>
+import PuzzleGrid from '../components/PuzzleGrid.vue'
+import PuzzleBox from '../components/PuzzleBox.vue'
+
 export default {
   name: 'hint-portal',
+  components: {
+    PuzzleGrid,
+    PuzzleBox,
+  },
   props: {
     game: Object,
   },
   data() {
     return {
-      puzzles: []
+      puzzles: [],
+      selectedPuzzle: [],
+      beforePuzzles: [],
+      afterPuzzles: [],
     }
   },
   mounted() {
@@ -76,9 +87,41 @@ export default {
         console.error(error)
       }
     },
+    async selectPuzzle(puzzle) {
+      this.beforePuzzles = []
+      this.afterPuzzles = []
+      this.selectedPuzzle = [puzzle]
+      this.convertKeyCase(puzzle, this.snakeToCamel)
+      const resBefore = await fetch('http://127.0.0.1:5000' + puzzle.links.self + '/before-puzzles')
+      const dataBefore = await resBefore.json()
+      dataBefore.forEach( async puzzle => {
+        this.convertKeyCase(puzzle, this.snakeToCamel)
+        const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self)
+        const data = await response.json()
+        this.beforePuzzles = [...this.beforePuzzles, data]
+      })
+      const resAfter = await fetch('http://127.0.0.1:5000' + puzzle.links.self + '/after-puzzles')
+      const dataAfter = await resAfter.json()
+      dataAfter.forEach( async puzzle => {
+        this.convertKeyCase(puzzle, this.snakeToCamel)
+        const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self)
+        const data = await response.json()
+        this.afterPuzzles = [...this.afterPuzzles, data]
+      })
+    },
   }
 }
 </script>
 
 <style scoped>
+.puzzle-nav {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
+.puzzle-grid {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
 </style>
