@@ -12,13 +12,22 @@
       <p>Please add puzzles.</p>
     </div>
     <div class="puzzle-grid">
-      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="beforePuzzles">
+      <puzzle-grid 
+        @send:hint="sendHint"
+        @select:puzzle="selectPuzzle"
+        :puzzles="beforePuzzles">
         <h4 slot="header">Before Puzzles</h4>
       </puzzle-grid>
-      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="selectedPuzzle">
+      <puzzle-grid
+        @send:hint="sendHint"
+        @select:puzzle="selectPuzzle"
+        :puzzles="selectedPuzzle">
         <h4 slot="header">Selected Puzzle</h4>
       </puzzle-grid>
-      <puzzle-grid @select:puzzle="selectPuzzle" :puzzles="afterPuzzles">
+      <puzzle-grid
+        @send:hint="sendHint"
+        @select:puzzle="selectPuzzle"
+        :puzzles="afterPuzzles">
         <h4 slot="header">After Puzzles</h4>
       </puzzle-grid>
     </div>
@@ -50,6 +59,9 @@ export default {
     this.getPuzzles()
   },
   methods: {
+    sendHint(hint) {
+      this.$socket.emit('hint', {hint: hint})
+    },
     snakeToCamel(str) {
         return str.replace(/_[a-z]/g, function(regexMatch) {
           if (str.indexOf(regexMatch) == 0) {

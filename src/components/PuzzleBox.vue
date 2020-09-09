@@ -6,6 +6,7 @@
     <button
       @click="selectPuzzle"
     >Select</button>
+    <slot name="hints-section"></slot>
     </div>
   </div>
 </template>
@@ -29,6 +30,7 @@
   border: solid;
   margin: 10px;
   min-width: 120px;
+  max-width: 220px;
 }
 .puzzle-section {
   text-align: center;

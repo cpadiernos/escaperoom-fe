@@ -2,7 +2,18 @@
   <div class="puzzle-bin">
     <slot name="header"></slot>
     <div v-for="puzzle in puzzles" :key="puzzle.id">
-      <puzzle-box @select:puzzle="selectPuzzle" :puzzle="puzzle"/>
+      <puzzle-box @select:puzzle="selectPuzzle" :puzzle="puzzle">
+        <div class="hint" slot="hints-section">
+          <div v-for="hint in puzzle.hints" :key="hint.id">{{ hint.text }}
+          <button
+            class="hint"
+            @click="sendHint(hint.text)"
+          >
+            Send
+          </button>
+          </div>
+        </div>
+      </puzzle-box>
     </div>
   </div>
 </template>
@@ -21,7 +32,10 @@ import PuzzleBox from './PuzzleBox.vue'
     methods: {
       selectPuzzle(puzzle) {
         this.$emit('select:puzzle', puzzle)
-      }
+      },
+      sendHint(hint) {
+        this.$emit('send:hint', hint)
+      },
     },
   }
 </script>
@@ -33,5 +47,12 @@ import PuzzleBox from './PuzzleBox.vue'
   text-align: center;
   border: solid grey;
   min-height: 250px;
+}
+button.hint {
+  background-color: green;
+  border: 0px;
+}
+.hint {
+  background: lightgrey;
 }
 </style>
