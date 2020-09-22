@@ -3,9 +3,12 @@
     <table>
       <thead>
         <tr>
-          <th>Game Name</th>
+          <th>Name</th>
           <th>Description</th>
-          <th>Number of Players</th>
+          <th># of Players</th>
+          <th></th>
+          <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -13,6 +16,25 @@
           <td>{{ game.name }}</td>
           <td>{{ game.description }}</td>
           <td>{{ game.numOfPlayers }}</td>
+          <td>
+            <button
+              @click="openEditGameModal(game)"
+            >
+              Edit
+            </button>
+          </td>
+          <td>
+            <button
+            >
+              Delete
+            </button>
+          </td>
+          <td>
+            <a
+            >
+              View Puzzles
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -20,11 +42,23 @@
 </template>
 
 <script>
+
   export default {
     name: 'game-table',
+    data() {
+      return {
+        game: {},
+        isModalVisible: false,
+      }
+    },
     props: {
       games: Array,
-    }
+    },
+    methods: {
+      openEditGameModal(game) {
+        this.$emit('open:edit', game)
+      }
+    },
   }
 </script>
 

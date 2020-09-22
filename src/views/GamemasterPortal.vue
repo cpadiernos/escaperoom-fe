@@ -1,25 +1,6 @@
 <template>
   <div class="small-container">
     <br/>
-    <button
-        type="button"
-        class="btn"
-        @click="showModal"
-      >
-        Add Game
-      </button>
-
-      <modal-box
-        v-show="isModalVisible"
-        @close="closeModal"
-      >
-        <div slot="header">
-          <h2>Add Game</h2>
-        </div>
-        <div slot="body">
-          <game-form @add:game="addGame" @close="closeModal"/>
-        </div>
-      </modal-box>
       <h1>Select Game</h1>
       <game-grid :games="games" />
     <br />
@@ -28,20 +9,15 @@
 
 <script>
 import GameGrid from '../components/GameGrid.vue'
-import ModalBox from '../components/ModalBox.vue'
-import GameForm from '../components/GameForm.vue'
 
 export default {
   name: 'gamemaster-portal',
   components: {
     GameGrid,
-    ModalBox,
-    GameForm,
   },
   data() {
     return {
       games: [],
-      isModalVisible: false,
       };
   },
   mounted() {
@@ -82,28 +58,6 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    },
-    async addGame(game) {
-      try {
-        this.convertKeyCase(game, this.camelToSnake);
-        const response = await fetch('http://127.0.0.1:5000/api/games' ,{
-          method: 'POST',
-          body: JSON.stringify(game),
-          headers: {'Content-type': 'application/json; charset=UTF=8'}
-          });
-        const data = await response.json();
-        this.convertKeyCase(data, this.snakeToCamel);
-        this.games = [...this.games, data];
-      } catch (error) {
-        console.error(error);
-        this.games = []
-      }
-    },
-    showModal() {
-      this.isModalVisible = true;
-    },
-    closeModal() {
-      this.isModalVisible = false;
     },
   }
 }

@@ -6,16 +6,12 @@
         v-model="game.name"
         type="text"
         :class="{ 'has-error': submitting && invalidName }"
-        @focus="clearStatus"
-        @keypress="clearStatus"
-        ref="first"
       />
       <label>Game description</label>
       <input
         v-model="game.description"
         type="text"
         :class="{ 'has-error': submitting && invalidDescription }"
-        @focus="clearStatus"
       />
       <label>Number of players</label>
       <input
@@ -26,7 +22,7 @@
       <p v-if="error && submitting" class="error-message">
         Please fill out all the required fields.
       </p>
-      <button>Add Game</button>
+      <button>Submit</button>
     </form>
   </div>
 </template>
@@ -39,12 +35,18 @@
         submitting: false,
         error: false,
         success: false,
-        game: {
+      }
+    },
+    props: {
+      game: {
+        type: Object,
+        default: () => ({ 
           name: '',
           description: '',
           numOfPlayers: '',
-        },
-      }
+        })
+      },
+      editing: Boolean,
     },
     computed: {
       invalidName() {
@@ -68,14 +70,14 @@
           this.invalidNumOfPlayers
         ) { this.error = true; return}
           
-        this.$emit('add:game', this.game)
-        this.$emit('close')
-        this.$refs.first.focus()
-        this.game = {
-          name: '',
-          description: '',
-          numOfPlayers: '',
+        if (this.editing) {
+          this.$emit('edit:game', this.game)
+        } else {
+          this.$emit('add:game', this.game)
         }
+
+        this.$emit('close')
+        this.$emit('clear')
         this.error = false
         this.success = true
         this.submitting = false

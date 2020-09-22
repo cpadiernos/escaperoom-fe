@@ -3,10 +3,42 @@ import VueRouter from 'vue-router'
 import HintPortal from '../views/HintPortal.vue'
 import GamemasterPortal from '../views/GamemasterPortal.vue'
 import PlayerPortal from '../views/PlayerPortal.vue'
+import AdminPortal from '../views/AdminPortal.vue'
+import AdminGames from '../views/AdminGames.vue'
+import AdminPuzzles from '../views/AdminPuzzles.vue'
+import AdminHints from '../views/AdminHints.vue'
+import AdminClues from '../views/AdminClues.vue'
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: '/admin',
+    name: 'admin-portal',
+    component: AdminPortal,
+    children: [
+      {
+        path: '',
+        name: 'admin-games',
+        component: AdminGames,
+      },
+      {
+        path: 'puzzles',
+        name: 'admin-puzzles',
+        component: AdminPuzzles,
+      },
+      {
+        path: 'clues',
+        name: 'admin-clues',
+        component: AdminClues,
+      },
+      {
+        path: 'hints',
+        name: 'admin-hints',
+        component: AdminHints
+      }
+    ]
+  },
   {
     path: '/',
     name: 'gamemaster-portal',
