@@ -1,6 +1,9 @@
 <template>
   <div id="game-form">
-    <form @submit.prevent="handleSubmit">
+    <form
+      v-if="action === 'adding' || action === 'editing'"
+      @submit.prevent="handleSubmit"
+      >
       <label>Game name</label>
       <input
         v-model="game.name"
@@ -22,7 +25,14 @@
       <p v-if="error && submitting" class="error-message">
         Please fill out all the required fields.
       </p>
-      <button>Submit</button>
+      <button v-if="action === 'adding'">Add</button>
+      <button v-if="action === 'editing'">Update</button>
+    </form>
+    <form v-else
+      @submit.prevent="handleSubmit"
+      >
+      <p>Are you sure you want to delete <span class="thick">{{ game.name }}</span>?</p>
+      <button>Yes, Delete</button>
     </form>
   </div>
 </template>
@@ -46,7 +56,7 @@
           numOfPlayers: '',
         })
       },
-      editing: Boolean,
+      action: String,
     },
     computed: {
       invalidName() {
@@ -70,10 +80,12 @@
           this.invalidNumOfPlayers
         ) { this.error = true; return}
           
-        if (this.editing) {
+        if (this.action === "editing") {
           this.$emit('edit:game', this.game)
-        } else {
+        } else if (this.action === "adding") {
           this.$emit('add:game', this.game)
+        } else if (this.action === "deleting") {
+          this.$emit('delete:game', this.game)
         }
 
         this.$emit('close')
@@ -105,5 +117,9 @@
   
   .success-message {
     color: green;
+  }
+  
+  .thick {
+    font-weight: bold;
   }
 </style>

@@ -25,6 +25,7 @@
           </td>
           <td>
             <button
+              @click="openDeleteGameModal(game)"
             >
               Delete
             </button>
@@ -57,6 +58,9 @@
     methods: {
       openEditGameModal(game) {
         this.$emit('open:edit', game)
+      },
+      openDeleteGameModal(game) {
+        this.$emit('open:delete', game)
       }
     },
   }

@@ -12,26 +12,37 @@
         @close="closeModal"
       >
         <div slot="header">
-          <h2 v-if="!editing">Add Game</h2>
-          <h2 v-if="editing">Edit Game</h2>
+          <h2 v-if="action === 'adding'">Add Game</h2>
+          <h2 v-if="action === 'editing'">Edit Game</h2>
+          <h2 v-if="action === 'deleting'">Delete Game</h2>
         </div>
         <div slot="body">
           <game-form
-            v-if="!editing" 
+            v-if="action === 'adding'" 
             @add:game="addGame"
-            :editing="false"
+            :action="action"
             @clear="clearForm"
             @close="closeModal" />
           <game-form 
-            v-if="editing"
+            v-if="action === 'editing'"
             :game="game"
             @edit:game="editGame"
-            :editing="true"
+            :action="action"
+            @clear="clearForm"
+            @close="closeModal" />
+          <game-form 
+            v-if="action === 'deleting'"
+            :game="game"
+            @delete:game="deleteGame"
+            :action="action"
             @clear="clearForm"
             @close="closeModal" />
         </div>
       </modal-box>
-      <game-table :games="games" @open:edit="openEditGameModal"/>
+      <game-table
+        :games="games"
+        @open:edit="openEditGameModal"
+        @open:delete="openDeleteGameModal" />
     <br />
   </div>
 </template>
@@ -52,7 +63,7 @@ export default {
     return {
       games: [],
       isModalVisible: false,
-      editing: false,
+      action: '',
       game: {},
       };
   },
@@ -124,13 +135,28 @@ export default {
       }
       this.getGames()
     },
+    async deleteGame(game) {
+      try {
+        await fetch('http://127.0.0.1:5000/api/games/' + game.id, {
+          method: 'DELETE',
+        });
+      } catch (error) {
+        console.error(error)
+      }
+      this.getGames()
+    },
     openAddGameModal() {
-      this.editing = false
+      this.action = "adding"
       this.showModal()
       this.game = {}
     },
     openEditGameModal(game) {
-      this.editing = true
+      this.action = "editing"
+      this.showModal()
+      this.game = game
+    },
+    openDeleteGameModal(game) {
+      this.action = "deleting"
       this.showModal()
       this.game = game
     },
