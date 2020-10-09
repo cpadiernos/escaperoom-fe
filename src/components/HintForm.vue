@@ -1,26 +1,20 @@
 <template>
-  <div id="game-form">
+  <div id="hint-form">
     <form
       v-if="action === 'adding' || action === 'editing'"
       @submit.prevent="handleSubmit"
       >
-      <label>Game name</label>
+      <label>Hint text</label>
       <input
-        v-model="game.name"
+        v-model="hint.text"
         type="text"
-        :class="{ 'has-error': submitting && invalidName }"
+        :class="{ 'has-error': submitting && invalidText }"
       />
-      <label>Game description</label>
+      <label>Puzzle Id</label>
       <input
-        v-model="game.description"
-        type="text"
-        :class="{ 'has-error': submitting && invalidDescription }"
-      />
-      <label>Number of players</label>
-      <input
-        v-model="game.numOfPlayers"
+        v-model="hint.puzzleId"
         type="number"
-        :class="{ 'has-error': submitting && invalidNumOfPlayers }"
+        :class="{ 'has-error': submitting && invalidPuzzleId }"
       />
       <p v-if="error && submitting" class="error-message">
         Please fill out all the required fields.
@@ -31,7 +25,7 @@
     <form v-else
       @submit.prevent="handleSubmit"
       >
-      <p>Are you sure you want to delete <span class="thick">{{ game.name }}</span>?</p>
+      <p>Are you sure you want to delete <span class="thick">{{ hint.text }}</span>?</p>
       <button>Yes, Delete</button>
     </form>
   </div>
@@ -39,7 +33,7 @@
 
 <script>
   export default {
-    name: 'game-form',
+    name: 'hint-form',
     data() {
       return {
         submitting: false,
@@ -48,22 +42,19 @@
       }
     },
     props: {
-      game: Object,
+      hint: Object,
       action: String,
     },
     computed: {
-      invalidName() {
-        return !this.game.name || /^\s*$/.test(this.game.name)
+      invalidText() {
+        return !this.hint.text || /^\s*$/.test(this.hint.text)
       },
-      invalidDescription() {
-        return !this.game.description || /^\s*$/.test(this.game.description)
+      invalidPuzzleId() {
+        return !this.hint.puzzleId || this.hint.puzzleId <= 0
       },
-      invalidNumOfPlayers() {
-        return !this.game.numOfPlayers || this.game.numOfPlayers <= 0
-      }
     },
     watch: {
-      game: function() {
+      hint: function() {
         this.submitting = false
         this.clearStatus()
       },
@@ -74,20 +65,19 @@
         this.clearStatus()
         
         if (
-          this.invalidName ||
-          this.invalidDescription ||
-          this.invalidNumOfPlayers
+            this.invalidText ||
+            this.invalidPuzzleId
         ) {this.error = true; return}
           
         if (this.action === "editing") {
-          this.$emit('edit:game', this.game)
+          this.$emit('edit:hint', this.hint)
         } else if (this.action === "adding") {
-          this.$emit('add:game', this.game)
+          this.$emit('add:hint', this.hint)
         } else if (this.action === "deleting") {
-          this.$emit('delete:game', this.game)
+          this.$emit('delete:hint', this.hint)
         }
 
-        this.$emit('close')
+        this.$emit('complete:submission')
         this.$emit('clear')
         this.error = false
         this.success = true

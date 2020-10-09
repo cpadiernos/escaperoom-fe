@@ -1,26 +1,26 @@
 <template>
-  <div id="game-form">
+  <div id="puzzle-form">
     <form
       v-if="action === 'adding' || action === 'editing'"
       @submit.prevent="handleSubmit"
       >
-      <label>Game name</label>
+      <label>Puzzle name</label>
       <input
-        v-model="game.name"
+        v-model="puzzle.name"
         type="text"
         :class="{ 'has-error': submitting && invalidName }"
       />
-      <label>Game description</label>
+      <label>Puzzle code</label>
       <input
-        v-model="game.description"
+        v-model="puzzle.code"
         type="text"
-        :class="{ 'has-error': submitting && invalidDescription }"
+        :class="{ 'has-error': submitting && invalidCode }"
       />
-      <label>Number of players</label>
+      <label>Game Id</label>
       <input
-        v-model="game.numOfPlayers"
+        v-model="puzzle.gameId"
         type="number"
-        :class="{ 'has-error': submitting && invalidNumOfPlayers }"
+        :class="{ 'has-error': submitting && invalidGameId }"
       />
       <p v-if="error && submitting" class="error-message">
         Please fill out all the required fields.
@@ -31,7 +31,7 @@
     <form v-else
       @submit.prevent="handleSubmit"
       >
-      <p>Are you sure you want to delete <span class="thick">{{ game.name }}</span>?</p>
+      <p>Are you sure you want to delete <span class="thick">{{ puzzle.name }}</span>?</p>
       <button>Yes, Delete</button>
     </form>
   </div>
@@ -39,7 +39,7 @@
 
 <script>
   export default {
-    name: 'game-form',
+    name: 'puzzle-form',
     data() {
       return {
         submitting: false,
@@ -48,22 +48,22 @@
       }
     },
     props: {
-      game: Object,
+      puzzle: Object,
       action: String,
     },
     computed: {
       invalidName() {
-        return !this.game.name || /^\s*$/.test(this.game.name)
+        return !this.puzzle.name || /^\s*$/.test(this.puzzle.name)
       },
-      invalidDescription() {
-        return !this.game.description || /^\s*$/.test(this.game.description)
+      invalidCode() {
+        return !this.puzzle.code || /^\s*$/.test(this.puzzle.code)
       },
-      invalidNumOfPlayers() {
-        return !this.game.numOfPlayers || this.game.numOfPlayers <= 0
+      invalidGameId() {
+        return !this.puzzle.gameId || this.puzzle.gameId <= 0
       }
     },
     watch: {
-      game: function() {
+      puzzle: function() {
         this.submitting = false
         this.clearStatus()
       },
@@ -75,19 +75,19 @@
         
         if (
           this.invalidName ||
-          this.invalidDescription ||
-          this.invalidNumOfPlayers
+          this.invalidCode ||
+          this.invalidGameId
         ) {this.error = true; return}
           
         if (this.action === "editing") {
-          this.$emit('edit:game', this.game)
+          this.$emit('edit:puzzle', this.puzzle)
         } else if (this.action === "adding") {
-          this.$emit('add:game', this.game)
+          this.$emit('add:puzzle', this.puzzle)
         } else if (this.action === "deleting") {
-          this.$emit('delete:game', this.game)
+          this.$emit('delete:puzzle', this.puzzle)
         }
 
-        this.$emit('close')
+        this.$emit('complete:submission')
         this.$emit('clear')
         this.error = false
         this.success = true

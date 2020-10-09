@@ -14,18 +14,49 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/admin',
+    redirect: '/admin/games',
     name: 'admin-portal',
     component: AdminPortal,
     children: [
       {
-        path: '',
+        path: 'games',
         name: 'admin-games',
         component: AdminGames,
+      },
+      {
+        path: 'games/:itemId/puzzles',
+        name: 'admin-game-puzzles',
+        component: AdminPuzzles,
+        props: route => ({
+            itemId: route.params.itemId,
+            itemName: route.params.itemName,
+            itemTypeProp: route.params.itemType
+          })
       },
       {
         path: 'puzzles',
         name: 'admin-puzzles',
         component: AdminPuzzles,
+      },
+      {
+        path: 'puzzles/:itemId/clues',
+        name: 'admin-puzzle-clues',
+        component: AdminClues,
+        props: route => ({
+            itemId: route.params.itemId,
+            itemName: route.params.itemName,
+            itemTypeProp: route.params.itemType
+          })
+      },
+      {
+        path: 'puzzles/:itemId/hints',
+        name: 'admin-puzzle-hints',
+        component: AdminHints,
+        props: route => ({
+            itemId: route.params.itemId,
+            itemName: route.params.itemName,
+            itemTypeProp: route.params.itemType
+          })
       },
       {
         path: 'clues',

@@ -6,7 +6,6 @@
       >
         Add Game
       </button>
-
       <modal-box
         v-show="isModalVisible"
         @close="closeModal"
@@ -17,47 +16,38 @@
           <h2 v-if="action === 'deleting'">Delete Game</h2>
         </div>
         <div slot="body">
-          <game-form
-            v-if="action === 'adding'" 
+          <game-form 
+            :game="game"
             @add:game="addGame"
-            :action="action"
-            @clear="clearForm"
-            @close="closeModal" />
-          <game-form 
-            v-if="action === 'editing'"
-            :game="game"
             @edit:game="editGame"
-            :action="action"
-            @clear="clearForm"
-            @close="closeModal" />
-          <game-form 
-            v-if="action === 'deleting'"
-            :game="game"
             @delete:game="deleteGame"
             :action="action"
             @clear="clearForm"
             @close="closeModal" />
         </div>
       </modal-box>
-      <game-table
-        :games="games"
+      <generic-table
+        :items="games"
         @open:edit="openEditGameModal"
-        @open:delete="openDeleteGameModal" />
+        @open:delete="openDeleteGameModal"
+        :itemType="itemType"
+        :subItems="subItems"
+      />
     <br />
   </div>
 </template>
 
 <script>
-import GameTable from '../components/GameTable.vue'
-import ModalBox from '../components/ModalBox.vue'
 import GameForm from '../components/GameForm.vue'
+import GenericTable from '../components/GenericTable.vue'
+import ModalBox from '../components/ModalBox.vue'
 
 export default {
-  name: 'gamemaster-portal',
+  name: 'admin-games',
   components: {
-    GameTable,
-    ModalBox,
     GameForm,
+    GenericTable,
+    ModalBox,
   },
   data() {
     return {
@@ -65,6 +55,8 @@ export default {
       isModalVisible: false,
       action: '',
       game: {},
+      itemType: 'game',
+      subItems: ['puzzles'],
       };
   },
   mounted() {
@@ -87,9 +79,9 @@ export default {
     },
     convertKeyCase(obj, caseConverter) {
       for (var key of Object.keys(obj)) {
-        let new_key = caseConverter(key);
-        if (new_key != key) {
-          obj[new_key] = obj[key];
+        let newKey = caseConverter(key);
+        if (newKey != key) {
+          obj[newKey] = obj[key];
           delete obj[key];
         }
       }

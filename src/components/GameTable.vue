@@ -31,10 +31,12 @@
             </button>
           </td>
           <td>
-            <a
+            <router-link
+              class="nav-link"
+              :to="{name: 'admin-game-puzzles', params: {gameId: game.id, gameName: game.name}}"
             >
               View Puzzles
-            </a>
+            </router-link>
           </td>
         </tr>
       </tbody>
@@ -43,15 +45,8 @@
 </template>
 
 <script>
-
   export default {
     name: 'game-table',
-    data() {
-      return {
-        game: {},
-        isModalVisible: false,
-      }
-    },
     props: {
       games: Array,
     },
