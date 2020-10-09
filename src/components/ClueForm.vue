@@ -56,10 +56,10 @@
         return !this.clue.name || /^\s*$/.test(this.clue.name)
       },
       invalidHolder() {
-        return !this.clue.holder || this.clue.gameId <= 0
+        return !this.clue.holder || this.clue.holder <= 0
       },
       invalidNeeder() {
-        return !this.clue.needer || this.clue.gameId <= 0
+        return !this.clue.needer || this.clue.needer <= 0
       }
     },
     watch: {
