@@ -8,4 +8,7 @@
 </script>
 
 <style>
+body {
+  background-color: #f7f7f8;
+}
 </style>

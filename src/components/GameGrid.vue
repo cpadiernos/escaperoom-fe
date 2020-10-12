@@ -32,11 +32,15 @@ import GameBox from "./GameBox.vue"
   justify-content: center;
 }
 .game-box {
-  border: solid;
+  border: 1px solid #ccc;
   max-width: 49%;
-  margin: .2rem;
+  margin: .5rem;
   min-width: 300px;
   flex-basis: auto;
   flex-grow: 1;
+  background-color: #ffffff;
+  -webkit-box-shadow: 10px 10px 9px -1px rgba(0,0,0,0.25);
+  -moz-box-shadow: 10px 10px 9px -1px rgba(0,0,0,0.25);
+  box-shadow: 10px 10px 9px -1px rgba(0,0,0,0.25);
 }
 </style>

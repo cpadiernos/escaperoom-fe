@@ -1,5 +1,5 @@
 <template>
-  <div class="small-container">
+  <div class="medium-container">
     <br/>
       <h1>Select Game</h1>
       <game-grid :games="games" />
@@ -62,6 +62,5 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 </style>

@@ -20,7 +20,7 @@
             </button>
           </td>
           <td>
-            <button
+            <button class="btn-red"
               @click="openDeleteModal(item)"
             >
               Delete
@@ -90,4 +90,14 @@
 </script>
 
 <style scoped>
+  .btn-red {
+    color: white;
+    background: #ee2603;
+    border: 1px solid #ee2603;
+  }
+  
+  .btn-red:hover {
+    background: #d52203;
+    border: 1px solid #d52203;
+  }
 </style>

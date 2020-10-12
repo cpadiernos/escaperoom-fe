@@ -2,7 +2,7 @@
   <div>
     <h1 v-if="itemName">{{itemName}} Hints</h1>
     <h1 v-else>All Hints</h1>
-    <button
+    <button class="accent-button"
       @click="openAddHintModal"
     >
       Add Hint

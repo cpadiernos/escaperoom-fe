@@ -2,7 +2,7 @@
   <div>
     <h1 v-if="itemName">{{itemName}} Puzzles</h1>
     <h1 v-else>All Puzzles</h1>
-    <button
+    <button class="accent-button"
       @click="openAddPuzzleModal"
     >
       Add Puzzle

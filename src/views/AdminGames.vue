@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Games</h1>
-    <button
+    <button class="accent-button"
         @click="openAddGameModal"
       >
         Add Game

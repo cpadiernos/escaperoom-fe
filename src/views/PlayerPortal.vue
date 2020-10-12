@@ -1,5 +1,5 @@
 <template>
-  <div class="small-container">
+  <div class="medium-container">
     <h1>Hint:</h1>
     <p class="hint">{{ hint }}</p>
   </div>

@@ -99,8 +99,13 @@
 
   .btn-red {
     color: white;
-    background: red;
-    border: 1px solid red;
+    background: #ee2603;
+    border: 1px solid #ee2603;
+  }
+  
+  .btn-red:hover {
+    background: #d52203;
+    border: 1px solid #d52203;
   }
   
   .modal-fade-enter,

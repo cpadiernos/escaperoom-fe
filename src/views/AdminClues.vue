@@ -2,7 +2,7 @@
   <div>
     <h1 v-if="itemName">{{itemName}} Clues</h1>
     <h1 v-else>All Clues</h1>
-    <button
+    <button class="accent-button"
       @click="openAddClueModal"
     >
       Add Clue

@@ -1,5 +1,5 @@
 <template>
-  <div class="small-container">
+  <div class="medium-container">
     <h1>{{ game.name }}</h1>
     <!--<input type="text" />-->
     <!--<button>Send Hint</button>-->
