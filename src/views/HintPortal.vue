@@ -1,8 +1,14 @@
 <template>
   <div class="medium-container">
     <h1>{{ game.name }}</h1>
-    <!--<input type="text" />-->
-    <!--<button>Send Hint</button>-->
+    <input ref="input" type="text" id="custom-hint"/>
+    <button 
+      class="accent-button"
+      @click="sendCustomHint"
+      >
+      Send Hint
+    </button>
+    <br/><br/>
     <div v-if="puzzles.length"  class="puzzle-nav" >
       <div v-for="puzzle in puzzles" :key="puzzle.id" >
         <puzzle-box @select:puzzle="selectPuzzle" :puzzle="puzzle"/>
@@ -59,6 +65,12 @@ export default {
     this.getPuzzles()
   },
   methods: {
+    sendCustomHint() {
+      const hint = document.getElementById('custom-hint').value
+      this.$socket.emit('hint', {hint: hint})
+      this.$refs.input.focus()
+      document.getElementById('custom-hint').value = ""
+    },
     sendHint(hint) {
       this.$socket.emit('hint', {hint: hint})
     },
@@ -126,6 +138,10 @@ export default {
 </script>
 
 <style scoped>
+input {
+  background-color: #ffffff;
+}
+
 .puzzle-nav {
   display: flex;
   justify-content: center;
