@@ -3,7 +3,7 @@
     <form @submit.prevent="handleSubmit">
       <label>How many players? (Max {{ game.numOfPlayers }})</label>
       <input
-        v-model="gameInstance.numOfPlayers"
+        v-model="event.numOfPlayers"
         type="number"
         :class="{ 'has-error': submitting && invalidNumOfPlayers }"
       />
@@ -26,15 +26,16 @@
         submitting: false,
         error: false,
         success: false,
-        gameInstance: {
+        event: {
+          gameId: this.game.id,
           numOfPlayers: '',
         },
       }
     },
     computed: {
       invalidNumOfPlayers() {
-        return (this.gameInstance.numOfPlayers <= 0)
-          || (this.gameInstance.numOfPlayers > this.game.numOfPlayers)
+        return (this.event.numOfPlayers <= 0)
+          || (this.event.numOfPlayers > this.game.numOfPlayers)
       }
     },
     methods: {
@@ -45,8 +46,9 @@
         if (
           this.invalidNumOfPlayers
         ) { this.error = true; return}
-          
-        this.$router.push({name: 'hint-portal', params: {game: this.game}})
+        
+        this.$emit('add:event', this.event)
+        this.$emit('close')
       },
       clearStatus() {
         this.error = false

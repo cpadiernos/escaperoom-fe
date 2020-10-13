@@ -2,7 +2,10 @@
   <div class="medium-container">
     <br/>
       <h1>Select Game</h1>
-      <game-grid :games="games" />
+      <game-grid
+        :games="games"
+        @add:event="addEvent"
+      />
     <br />
   </div>
 </template>
@@ -55,6 +58,22 @@ export default {
           this.convertKeyCase(game, this.snakeToCamel);
         });
         this.games = data;
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async addEvent(event) {
+      try {
+        this.convertKeyCase(event, this.camelToSnake);
+        const response = await fetch('http://127.0.0.1:5000' + '/api/events' ,{
+          method: 'POST',
+          body: JSON.stringify(event),
+          headers: {'Content-type': 'application/json; charset=UTF=8'}
+        });
+        const data = await response.json();
+        this.convertKeyCase(data, this.snakeToCamel);
+        this.$router.push({name: 'hint-portal', params: {game: this.game}})
+        this.$socket.emit('event', {status: 'created'})
       } catch (error) {
         console.error(error)
       }

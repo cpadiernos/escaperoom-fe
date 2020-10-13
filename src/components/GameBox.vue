@@ -19,7 +19,11 @@
       @close="closeModal"
     >
       <h4 slot="header">{{ game.name }}</h4>
-      <event-form slot="body" :game="game"/>
+      <event-form
+        slot="body"
+        :game="game"
+        @add:event="addEvent"
+      />
     </modal-box>
   </div>
 </template>
@@ -43,6 +47,9 @@ export default {
     }
   },
   methods: {
+    addEvent(event) {
+      this.$emit('add:event', event)
+    },
     showModal() {
       this.isModalVisible = true;
     },

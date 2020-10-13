@@ -1,6 +1,6 @@
 <template>
   <div class="medium-container">
-    <h1>{{ game.name }}</h1>
+    <h1>{{ game.name }}<base-timer :time-left="timeLeft"/></h1>
     <input ref="input" type="text" id="custom-hint"/>
     <button 
       class="accent-button"
@@ -8,7 +8,6 @@
       >
       Send Hint
     </button>
-    <br/><br/>
     <div v-if="puzzles.length"  class="puzzle-nav" >
       <div v-for="puzzle in puzzles" :key="puzzle.id" >
         <puzzle-box @select:puzzle="selectPuzzle" :puzzle="puzzle"/>
@@ -43,15 +42,14 @@
 <script>
 import PuzzleGrid from '../components/PuzzleGrid.vue'
 import PuzzleBox from '../components/PuzzleBox.vue'
+import BaseTimer from '../components/BaseTimer.vue'
 
 export default {
   name: 'hint-portal',
   components: {
     PuzzleGrid,
     PuzzleBox,
-  },
-  props: {
-    game: Object,
+    BaseTimer,
   },
   data() {
     return {
@@ -59,12 +57,24 @@ export default {
       selectedPuzzle: [],
       beforePuzzles: [],
       afterPuzzles: [],
+      timerInterval: null,
+      timeLimit: null,
+      timePassed: 0,
+      game: {},
     }
   },
   mounted() {
-    this.getPuzzles()
+    this.getEvent()
+  },
+  computed: {
+    timeLeft() {
+      return this.timeLimit - this.timePassed
+    }
   },
   methods: {
+    startTimer() {
+      this.timerInterval = setInterval(() => (this.timePassed += 1), 1000)
+    },
     sendCustomHint() {
       const hint = document.getElementById('custom-hint').value
       this.$socket.emit('hint', {hint: hint})
@@ -96,6 +106,43 @@ export default {
           delete obj[key];
         }
       }
+    },
+    async getEvent() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000' + '/api/events/active' )
+        const data = await response.json()
+        this.convertKeyCase(data, this.snakeToCamel)
+        this.getGame(data.gameId)
+        this.getTimeLimit(data.endTime)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getGame(gameId) {
+      try {
+        const response = await fetch('http://127.0.0.1:5000' + '/api/games/' + gameId)
+        const data = await response.json()
+        this.convertKeyCase(data, this.snakeToCamel)
+        this.game = data
+        this.getPuzzles()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    getTimeLimit(endTime) {
+        const endHrs = endTime.split(':')[0]
+        const endMins = endTime.split(':')[1]
+        const endSecs = endTime.split(':')[2]
+        const endMs = (endHrs * 60 * 60 * 1000)
+          + (endMins * 60 * 1000)
+          + (endSecs * 1000);
+        const today = new Date();
+        const currentMs = (today.getHours() * 60 * 60 * 1000)
+          + (today.getMinutes() * 60  * 1000)
+          + (today.getSeconds() * 1000);
+        this.timeLimit = (endMs - currentMs)/(1000)
+        this.timePassed = 0
+        this.startTimer()
     },
     async getPuzzles() {
       try {
@@ -133,7 +180,7 @@ export default {
         this.afterPuzzles = [...this.afterPuzzles, data]
       })
     },
-  }
+  },
 }
 </script>
 

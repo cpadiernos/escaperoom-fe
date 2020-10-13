@@ -2,7 +2,10 @@
 <div>
   <div  v-if="games.length" class="game-grid">
     <div class="game-box" v-for="game in games" :key="game.id">
-      <game-box :game="game"/>
+      <game-box
+        :game="game"
+        @add:event="addEvent"
+      />
     </div>
   </div>
   <div v-else>
@@ -21,6 +24,11 @@ import GameBox from "./GameBox.vue"
     },
     props: {
       games: Array,
+    },
+    methods: {
+      addEvent(event) {
+        this.$emit('add:event', event)
+      },
     },
   }
 </script>

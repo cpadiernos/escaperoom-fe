@@ -72,6 +72,10 @@ const routes = [
   },
   {
     path: '/',
+    redirect: '/gamemaster-portal',
+  },
+  {
+    path: '/gamemaster-portal',
     name: 'gamemaster-portal',
     component: GamemasterPortal,
   },
@@ -79,14 +83,6 @@ const routes = [
     path: '/hint-portal',
     name: 'hint-portal',
     component: HintPortal,
-    props: true,
-    beforeEnter: (to, from, next) => {
-      if (to.params.game) {
-        next();
-      } else {
-        next({name: 'gamemaster-portal'})
-      }
-    }
   },
   {
     path: '/player-portal',
