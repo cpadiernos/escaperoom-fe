@@ -2,7 +2,7 @@ module.exports = {
     devServer: {
         proxy: {
             '/socket.io': {
-                target: 'http://localhost:5000',
+                target: process.env.VUE_APP_BASE_URL,
                 ws: true,
                 changeOrigin: true,
             }

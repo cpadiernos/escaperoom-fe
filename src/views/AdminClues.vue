@@ -43,6 +43,7 @@
 import GenericTable from "../components/GenericTable.vue"
 import ModalBox from "../components/ModalBox.vue"
 import ClueForm from "../components/ClueForm.vue"
+import caseConversion from '../mixins/caseConversion.js'
 
 function initialize() {
   return {
@@ -62,6 +63,7 @@ export default {
     ModalBox,
     ClueForm,
   },
+  mixins: [caseConversion],
   props: {
     itemName: String,
     itemId: [String, Number],
@@ -83,37 +85,14 @@ export default {
     this.getClues(this.itemId)
   },
   methods: {
-    snakeToCamel(str) {
-      return str.replace(/_[a-z]/g, function(regexMatch) {
-        if (str.indexOf(regexMatch) == 0) {
-          return regexMatch[1];
-        } else {
-          return regexMatch[1].toUpperCase();
-        }
-      });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let newKey = caseConverter(key);
-        if (newKey != key) {
-          obj[newKey] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getClues(itemId) {
       try {
         const itemURL = itemId ? this.itemTypeProp + 's/' + itemId + '/' : '';
-        const response = await fetch('http://127.0.0.1:5000' + '/api/' + itemURL + 'clues')
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/' + itemURL + 'clues')
         const data = await response.json()
         data.forEach(async clue => {
           this.convertKeyCase(clue, this.snakeToCamel)
-          const response = await fetch('http://127.0.0.1:5000' + clue.links.self )
+          const response = await fetch(process.env.VUE_APP_BASE_URL + clue.links.self )
           const data = await response.json()
           this.convertKeyCase(data, this.snakeToCamel)
           this.clues = [...this.clues, data]
@@ -125,7 +104,7 @@ export default {
     async addClue(clue) {
       try {
         this.convertKeyCase(clue, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/clues' ,{
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/clues' ,{
           method: 'POST',
           body: JSON.stringify(clue),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -139,7 +118,7 @@ export default {
     async editClue(clue) {
       try {
         this.convertKeyCase(clue, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/clues/' + clue.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/clues/' + clue.id, {
           method: 'PUT',
           body: JSON.stringify(clue),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -152,7 +131,7 @@ export default {
     },
     async deleteClue(clue) {
       try {
-        await fetch('http://127.0.0.1:5000' + '/api/clues/' + clue.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/clues/' + clue.id, {
           method: 'DELETE',
         });
       } catch (error) {

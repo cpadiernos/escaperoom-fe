@@ -41,8 +41,10 @@ import GameBox from "./GameBox.vue"
 }
 .game-box {
   border: 1px solid #ccc;
+  padding: 1rem;
   max-width: 49%;
   margin: .5rem;
+  max-width: 300px;
   min-width: 300px;
   flex-basis: auto;
   flex-grow: 1;

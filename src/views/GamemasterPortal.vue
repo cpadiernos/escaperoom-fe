@@ -12,12 +12,14 @@
 
 <script>
 import GameGrid from '../components/GameGrid.vue'
+import caseConversion from '../mixins/caseConversion.js'
 
 export default {
   name: 'gamemaster-portal',
   components: {
     GameGrid,
   },
+  mixins: [caseConversion],
   data() {
     return {
       games: [],
@@ -27,32 +29,9 @@ export default {
     this.getGames()
   },
   methods: {
-    snakeToCamel(str) {
-        return str.replace(/_[a-z]/g, function(regexMatch) {
-          if (str.indexOf(regexMatch) == 0) {
-            return regexMatch[1];
-          } else {
-            return regexMatch[1].toUpperCase();
-          }
-        });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let new_key = caseConverter(key);
-        if (new_key != key) {
-          obj[new_key] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getGames() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/games')
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/games')
         const data = await response.json()
         data.forEach(game => {
           this.convertKeyCase(game, this.snakeToCamel);
@@ -65,7 +44,7 @@ export default {
     async addEvent(event) {
       try {
         this.convertKeyCase(event, this.camelToSnake);
-        const response = await fetch('http://127.0.0.1:5000' + '/api/events' ,{
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/events' ,{
           method: 'POST',
           body: JSON.stringify(event),
           headers: {'Content-type': 'application/json; charset=UTF=8'}

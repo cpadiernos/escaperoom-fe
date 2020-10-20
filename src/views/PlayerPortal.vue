@@ -8,15 +8,14 @@
 
 <script>
 import BaseTimer from '../components/BaseTimer.vue'
+import caseConversion from '../mixins/caseConversion.js'
 
   export default {
     name: 'player-portal',
     components: {
       BaseTimer,
     },
-    mounted() {
-      this.getEvent()
-    },
+    mixins: [caseConversion],
     data() {
       return {
         hint: '',
@@ -40,37 +39,16 @@ import BaseTimer from '../components/BaseTimer.vue'
         }
       }
     },
+    mounted() {
+      this.getEvent()
+    },
     methods: {
       startTimer() {
         this.timerInterval = setInterval(() => (this.timePassed += 1), 1000)
       },
-      snakeToCamel(str) {
-        return str.replace(/_[a-z]/g, function(regexMatch) {
-          if (str.indexOf(regexMatch) == 0) {
-            return regexMatch[1];
-          } else {
-            return regexMatch[1].toUpperCase();
-          }
-        });
-      },
-      camelToSnake(str) {
-        return str.replace(/[A-Z]/g, function(regexMatch) {
-          return "_" + regexMatch.toLowerCase();
-        });
-      },
-      convertKeyCase(obj, caseConverter) {
-        for (var key of Object.keys(obj)) {
-          let new_key = caseConverter(key);
-          if (new_key != key) {
-            obj[new_key] = obj[key];
-            delete obj[key];
-          }
-        }
-      },
       async getEvent() {
         try {
-          console.log('getting event')
-          const response = await fetch('http://127.0.0.1:5000' + '/api/events/active' )
+          const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/events/active' )
           const data = await response.json()
           this.convertKeyCase(data, this.snakeToCamel)
           this.getTimeLimit(data.endTime)

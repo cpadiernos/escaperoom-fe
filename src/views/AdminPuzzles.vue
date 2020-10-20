@@ -43,6 +43,7 @@
 import GenericTable from "../components/GenericTable.vue"
 import ModalBox from "../components/ModalBox.vue"
 import PuzzleForm from "../components/PuzzleForm.vue"
+import caseConversion from '../mixins/caseConversion.js'
 
 function initialize() {
   return {
@@ -62,6 +63,7 @@ export default {
     ModalBox,
     PuzzleForm,
   },
+  mixins: [caseConversion],
   props: {
     itemName: String,
     itemId: [String, Number],
@@ -83,37 +85,14 @@ export default {
     this.getPuzzles(this.itemId)
   },
   methods: {
-    snakeToCamel(str) {
-      return str.replace(/_[a-z]/g, function(regexMatch) {
-        if (str.indexOf(regexMatch) == 0) {
-          return regexMatch[1];
-        } else {
-          return regexMatch[1].toUpperCase();
-        }
-      });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let newKey = caseConverter(key);
-        if (newKey != key) {
-          obj[newKey] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getPuzzles(itemId) {
       try {
         const itemURL = itemId ? this.itemTypeProp + 's/' + itemId + '/' : '';
-        const response = await fetch('http://127.0.0.1:5000' + '/api/' + itemURL + 'puzzles')
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/' + itemURL + 'puzzles')
         const data = await response.json()
         data.forEach(async puzzle => {
           this.convertKeyCase(puzzle, this.snakeToCamel)
-          const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self )
+          const response = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self )
           const data = await response.json()
           this.convertKeyCase(data, this.snakeToCamel)
           this.puzzles = [...this.puzzles, data]
@@ -125,7 +104,7 @@ export default {
     async addPuzzle(puzzle) {
       try {
         this.convertKeyCase(puzzle, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/puzzles' ,{
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/puzzles' ,{
           method: 'POST',
           body: JSON.stringify(puzzle),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -139,7 +118,7 @@ export default {
     async editPuzzle(puzzle) {
       try {
         this.convertKeyCase(puzzle, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/puzzles/' + puzzle.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/puzzles/' + puzzle.id, {
           method: 'PUT',
           body: JSON.stringify(puzzle),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -152,7 +131,7 @@ export default {
     },
     async deletePuzzle(puzzle) {
       try {
-        await fetch('http://127.0.0.1:5000' + '/api/puzzles/' + puzzle.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/puzzles/' + puzzle.id, {
           method: 'DELETE',
         });
       } catch (error) {

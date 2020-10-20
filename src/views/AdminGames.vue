@@ -41,6 +41,7 @@
 import GameForm from '../components/GameForm.vue'
 import GenericTable from '../components/GenericTable.vue'
 import ModalBox from '../components/ModalBox.vue'
+import caseConversion from '../mixins/caseConversion.js'
 
 export default {
   name: 'admin-games',
@@ -49,6 +50,7 @@ export default {
     GenericTable,
     ModalBox,
   },
+  mixins: [caseConversion],
   data() {
     return {
       games: [],
@@ -63,32 +65,9 @@ export default {
     this.getGames()
   },
   methods: {
-    snakeToCamel(str) {
-        return str.replace(/_[a-z]/g, function(regexMatch) {
-          if (str.indexOf(regexMatch) == 0) {
-            return regexMatch[1];
-          } else {
-            return regexMatch[1].toUpperCase();
-          }
-        });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let newKey = caseConverter(key);
-        if (newKey != key) {
-          obj[newKey] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getGames() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/games')
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/games')
         const data = await response.json()
         data.forEach(game => {
           this.convertKeyCase(game, this.snakeToCamel);
@@ -101,7 +80,7 @@ export default {
     async addGame(game) {
       try {
         this.convertKeyCase(game, this.camelToSnake);
-        const response = await fetch('http://127.0.0.1:5000/api/games' ,{
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/games' ,{
           method: 'POST',
           body: JSON.stringify(game),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -117,7 +96,7 @@ export default {
     async editGame(game) {
       try {
         this.convertKeyCase(game, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000/api/games/' + game.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/games' + game.id, {
           method: 'PUT',
           body: JSON.stringify(game),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -129,7 +108,7 @@ export default {
     },
     async deleteGame(game) {
       try {
-        await fetch('http://127.0.0.1:5000/api/games/' + game.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/games' + game.id, {
           method: 'DELETE',
         });
       } catch (error) {

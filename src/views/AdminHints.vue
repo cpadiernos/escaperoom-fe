@@ -43,6 +43,7 @@
 import GenericTable from "../components/GenericTable.vue"
 import ModalBox from "../components/ModalBox.vue"
 import HintForm from "../components/HintForm.vue"
+import caseConversion from '../mixins/caseConversion.js'
 
 function initialize() {
   return {
@@ -62,6 +63,7 @@ export default {
     ModalBox,
     HintForm,
   },
+  mixins: [caseConversion],
   props: {
     itemName: String,
     itemId: [String, Number],
@@ -83,37 +85,14 @@ export default {
     this.getHints(this.itemId)
   },
   methods: {
-    snakeToCamel(str) {
-      return str.replace(/_[a-z]/g, function(regexMatch) {
-        if (str.indexOf(regexMatch) == 0) {
-          return regexMatch[1];
-        } else {
-          return regexMatch[1].toUpperCase();
-        }
-      });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let newKey = caseConverter(key);
-        if (newKey != key) {
-          obj[newKey] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getHints(itemId) {
       try {
         const itemURL = itemId ? this.itemTypeProp + 's/' + itemId + '/' : '';
-        const response = await fetch('http://127.0.0.1:5000' + '/api/' + itemURL + 'hints')
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/' + itemURL + 'hints')
         const data = await response.json()
         data.forEach(async hint => {
           this.convertKeyCase(hint, this.snakeToCamel)
-          const response = await fetch('http://127.0.0.1:5000' + hint.links.self )
+          const response = await fetch(process.env.VUE_APP_BASE_URL + hint.links.self )
           const data = await response.json()
           this.convertKeyCase(data, this.snakeToCamel)
           this.hints = [...this.hints, data]
@@ -125,7 +104,7 @@ export default {
     async addHint(hint) {
       try {
         this.convertKeyCase(hint, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/hints' ,{
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/hints' ,{
           method: 'POST',
           body: JSON.stringify(hint),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -139,7 +118,7 @@ export default {
     async editHint(hint) {
       try {
         this.convertKeyCase(hint, this.camelToSnake);
-        await fetch('http://127.0.0.1:5000' + '/api/hints/' + hint.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/hints/' + hint.id, {
           method: 'PUT',
           body: JSON.stringify(hint),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -153,7 +132,7 @@ export default {
     async deleteHint(hint) {
       console.log('deleting hint')
       try {
-        await fetch('http://127.0.0.1:5000' + '/api/hints/' + hint.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/hints/' + hint.id, {
           method: 'DELETE',
         });
       } catch (error) {

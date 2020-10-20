@@ -43,6 +43,7 @@
 import PuzzleGrid from '../components/PuzzleGrid.vue'
 import PuzzleBox from '../components/PuzzleBox.vue'
 import BaseTimer from '../components/BaseTimer.vue'
+import caseConversion from '../mixins/caseConversion.js'
 
 export default {
   name: 'hint-portal',
@@ -51,6 +52,7 @@ export default {
     PuzzleBox,
     BaseTimer,
   },
+  mixins: [caseConversion],
   data() {
     return {
       puzzles: [],
@@ -63,13 +65,13 @@ export default {
       game: {},
     }
   },
-  mounted() {
-    this.getEvent()
-  },
   computed: {
     timeLeft() {
       return this.timeLimit - this.timePassed
     }
+  },
+  mounted() {
+    this.getEvent()
   },
   methods: {
     startTimer() {
@@ -84,32 +86,9 @@ export default {
     sendHint(hint) {
       this.$socket.emit('hint', {hint: hint})
     },
-    snakeToCamel(str) {
-        return str.replace(/_[a-z]/g, function(regexMatch) {
-          if (str.indexOf(regexMatch) == 0) {
-            return regexMatch[1];
-          } else {
-            return regexMatch[1].toUpperCase();
-          }
-        });
-    },
-    camelToSnake(str) {
-      return str.replace(/[A-Z]/g, function(regexMatch) {
-        return "_" + regexMatch.toLowerCase();
-      });
-    },
-    convertKeyCase(obj, caseConverter) {
-      for (var key of Object.keys(obj)) {
-        let new_key = caseConverter(key);
-        if (new_key != key) {
-          obj[new_key] = obj[key];
-          delete obj[key];
-        }
-      }
-    },
     async getEvent() {
       try {
-        const response = await fetch('http://127.0.0.1:5000' + '/api/events/active' )
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/events/active' )
         const data = await response.json()
         this.convertKeyCase(data, this.snakeToCamel)
         this.getGame(data.gameId)
@@ -120,7 +99,7 @@ export default {
     },
     async getGame(gameId) {
       try {
-        const response = await fetch('http://127.0.0.1:5000' + '/api/games/' + gameId)
+        const response = await fetch(process.env.VUE_APP_BASE_URL + '/api/games/' + gameId)
         const data = await response.json()
         this.convertKeyCase(data, this.snakeToCamel)
         this.game = data
@@ -146,11 +125,11 @@ export default {
     },
     async getPuzzles() {
       try {
-        const response = await fetch('http://127.0.0.1:5000' + this.game.links.self )
+        const response = await fetch(process.env.VUE_APP_BASE_URL + this.game.links.self )
         const data = await response.json()
         data.puzzles.forEach( async puzzle => {
           this.convertKeyCase(puzzle, this.snakeToCamel)
-          const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self )
+          const response = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self )
           const data = await response.json()
           this.puzzles = [...this.puzzles, data]
         })
@@ -163,19 +142,19 @@ export default {
       this.afterPuzzles = []
       this.selectedPuzzle = [puzzle]
       this.convertKeyCase(puzzle, this.snakeToCamel)
-      const resBefore = await fetch('http://127.0.0.1:5000' + puzzle.links.self + '/before-puzzles')
+      const resBefore = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self + '/before-puzzles')
       const dataBefore = await resBefore.json()
       dataBefore.forEach( async puzzle => {
         this.convertKeyCase(puzzle, this.snakeToCamel)
-        const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self)
+        const response = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self)
         const data = await response.json()
         this.beforePuzzles = [...this.beforePuzzles, data]
       })
-      const resAfter = await fetch('http://127.0.0.1:5000' + puzzle.links.self + '/after-puzzles')
+      const resAfter = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self + '/after-puzzles')
       const dataAfter = await resAfter.json()
       dataAfter.forEach( async puzzle => {
         this.convertKeyCase(puzzle, this.snakeToCamel)
-        const response = await fetch('http://127.0.0.1:5000' + puzzle.links.self)
+        const response = await fetch(process.env.VUE_APP_BASE_URL + puzzle.links.self)
         const data = await response.json()
         this.afterPuzzles = [...this.afterPuzzles, data]
       })
