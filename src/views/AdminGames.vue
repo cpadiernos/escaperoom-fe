@@ -96,7 +96,7 @@ export default {
     async editGame(game) {
       try {
         this.convertKeyCase(game, this.camelToSnake);
-        await fetch(process.env.VUE_APP_BASE_URL + '/api/games' + game.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/games/' + game.id, {
           method: 'PUT',
           body: JSON.stringify(game),
           headers: {'Content-type': 'application/json; charset=UTF=8'}
@@ -108,7 +108,7 @@ export default {
     },
     async deleteGame(game) {
       try {
-        await fetch(process.env.VUE_APP_BASE_URL + '/api/games' + game.id, {
+        await fetch(process.env.VUE_APP_BASE_URL + '/api/games/' + game.id, {
           method: 'DELETE',
         });
       } catch (error) {
