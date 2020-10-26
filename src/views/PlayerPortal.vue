@@ -64,7 +64,7 @@ import caseConversion from '../mixins/caseConversion.js'
             + (endMins * 60 * 1000)
             + (endSecs * 1000);
           const today = new Date();
-          const currentMs = (today.getHours() * 60 * 60 * 1000)
+          const currentMs = ((endHrs - 1) * 60 * 60 * 1000)
             + (today.getMinutes() * 60  * 1000)
             + (today.getSeconds() * 1000);
           this.timeLimit = (endMs - currentMs)/(1000)

@@ -130,7 +130,6 @@ export default {
       this.getHints(this.itemId)
     },
     async deleteHint(hint) {
-      console.log('deleting hint')
       try {
         await fetch(process.env.VUE_APP_BASE_URL + '/api/hints/' + hint.id, {
           method: 'DELETE',
